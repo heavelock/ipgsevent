@@ -28,7 +28,7 @@ setup(
     classifiers=[
       'Development Status :: 3 - Alpha',
       'Intended Audience :: Developers',
-      'Programming Language :: Python :: 3',
+      'Programming Language :: Python :: 3.7',
     ],
     keywords='',
     packages=find_packages(exclude=['docs', 'tests*']),
@@ -38,5 +38,7 @@ setup(
     dependency_links=dependency_links,
     author_email='dkula@unistra.fr',
     entry_points={'console_scripts': [
-          'ipgsevent = ipgsevent.cli.main:main']})
+        'ipgsevent-cli = ipgsevent.cli:main',
+        'ipgsevent-parser = ipgsevent.page_parser:main'
+    ]}
 )

@@ -1,60 +1,69 @@
-import click
-import ics
-import datetime
-import dateparser
-import arrow
-from dateutil import tz
+from ipgsevent.base import SeminarItem, parse_seminar_date, validate_language, split_author_affiliation,\
+    save_ics_file, validate_bool, prepare_email_annoucements
+
 
 def main():
-    cal = ics.Calendar()
-    event = ics.Event()
 
-    seminar_date = input("Date of the seminar yyyy/mm/dd").strip()
-    seminar_hour = input("Starting hour of seminar").strip()
+    seminar = SeminarItem()
+    seminar_date = input("Date of the seminar yyyy/mm/dd\n").strip()
+    seminar_hour = input("Starting hour of seminar (13h45)\n").strip()
+
+    if seminar_hour is '':
+        seminar_hour = '13h45'
+
+    starttime = parse_seminar_date(" ".join([seminar_date, seminar_hour]))
+
+    print(f'Got starttime: {starttime}')
+    seminar.date = starttime
 
 
-    title = input("Title of seminar").strip()
-    speaker = input("Speaker").strip()
-    lang = input("Language of seminar (french/english)").strip()
-    location = input("Location of seminar").strip()
+    while True:
+        title = input("Title of seminar \n").strip()
+        if title == '':
+            print("Empty string received, repeat")
+            continue
+        seminar.title = title
+        break
+    
+    while True:
+        speaker = input("Speaker \n").strip()
+        if speaker == '':
+            print('Empty string received, repeat')
+            continue
+        seminar.author, seminar.affiliation = split_author_affiliation(speaker)
+
+        print(f'Received:\n\tName: {seminar.author}\n\tAffiliation: {seminar.affiliation}')
+        break
+    
+    for i in range(2):
+        lang = input("Language of seminar (french/english) \n").strip()
+        try:
+            lang = validate_language(language=lang)
+        except ValueError as e:
+            print(e)
+            continue
+        break
+
+    print(f'Got language: {lang}')
+    seminar.set_language(lang)
+
+    location = input("Location of seminar (Amphi rothe) \n").strip()
+    if location is '':
+        location = 'IPGS, Amphi Rothé'
+    seminar.place = location
+
     abstract = input("Abstract (Optional)").strip()
+    seminar.abstract = abstract
 
+    save = input('Do you want to save .ics file? Default: Yes\n')
+    if save == '':
+        save = 'y'
+    if validate_bool(save):
+        filepath = save_ics_file(seminar)
+        print(f'File saved to {filepath}')
 
-
-    starttime = dateparser.parse(" ".join([seminar_date, seminar_hour]))
-    starttime = arrow.get(starttime)
-    starttime = starttime.replace(tzinfo=tz.gettz())
-
-
-
-    event.begin = starttime
-    event.name = title
-    event.location = location
-
-    if lang.lower() == "french":
-        lang = "Français"
-    elif lang.lower() == "english":
-        lang = "Anglais"
-    language = "Le séminaire sera en {}.".format(lang)
-
-
-    description = "\n".join([speaker, language, abstract])
-
-    event.description = description
-
-    cal.events.add(event)
-
-    filename_default = '-'.join([starttime.date(), 'Seminaire'])
-
-    filename = input("Filename (Default: {})".format(filename_default)).strip()
-
-    if filename == "":
-        filename = filename_default
-
-
-    with open(filename, "w+") as f:
-        f.writelines(cal)
-
+    if validate_bool(input('Compose emails in thunderbird?\n')):
+        prepare_email_annoucements(seminar, filepath)
 
 
 if __name__ == '__main__':

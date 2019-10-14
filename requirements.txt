@@ -1,4 +1,5 @@
 pypi-publisher
 
 ics
+arrow
 dateparser
