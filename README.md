@@ -1,13 +1,16 @@
 IPGSEventCreator
 ===============================
 
-version number: 0.0.1
+version number: 0.1
 author: Damian Kula
 
 Overview
 --------
 
-IPGSEventCreator creates .ics files for IPGS seminars
+IPGSEvent serves as a tool speeding up setting announcements of seminars taking place in IPGS.
+It can either parse IPGS's event calendar or entering all data by hand.
+It creates .ics files on basis of that data and then is capable of invoking Thunderbird with draft of the announcement 
+that contains created .ics file.
 
 Installation / Usage
 --------------------
