@@ -15,11 +15,6 @@ that contains created .ics file.
 Installation / Usage
 --------------------
 
-To install use pip:
-
-    $ pip install ipgsevent
-
-
 Or clone the repo:
 
     $ git clone https://github.com/heavelock/ipgsevent.git
